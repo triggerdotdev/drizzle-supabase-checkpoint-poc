@@ -9,18 +9,15 @@
   "scripts": {
     "typecheck": "tsc --noEmit",
     "deploy": "trigger deploy",
-    "e2e": "tsx scripts/checkpoint-e2e.ts",
-    "e2e:chat": "tsx scripts/chat-e2e.ts",
-    "logs": "tsx scripts/checkpoint-logs.ts",
-    "report": "tsx scripts/report.ts"
+    "e2e": "tsx scripts/e2e.ts",
+    "logs": "tsx scripts/checkpoint-logs.ts"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "3.0.116",
     "@trigger.dev/sdk": "4.6.1",
     "ai": "6.0.278",
     "drizzle-orm": "0.45.2",
-    "pg": "8.23.0",
-    "zod": "4.5.4"
+    "pg": "8.23.0"
   },
   "devDependencies": {
     "@types/node": "22.20.1",
