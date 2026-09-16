@@ -1,0 +1,9 @@
+node_modules/
+.env
+.env.*
+!.env.example
+.secrets/
+.trigger/
+evidence/
+*.log
+.DS_Store

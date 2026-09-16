@@ -1,0 +1,32 @@
+{
+  "name": "drizzle-supabase-checkpoint-poc",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@10.33.2",
+  "engines": {
+    "node": "24.18.0"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "deploy": "trigger deploy",
+    "e2e": "tsx scripts/checkpoint-e2e.ts",
+    "e2e:chat": "tsx scripts/chat-e2e.ts",
+    "logs": "tsx scripts/checkpoint-logs.ts",
+    "report": "tsx scripts/report.ts"
+  },
+  "dependencies": {
+    "@ai-sdk/anthropic": "3.0.116",
+    "@trigger.dev/sdk": "4.6.1",
+    "ai": "6.0.278",
+    "drizzle-orm": "0.45.2",
+    "pg": "8.23.0",
+    "zod": "4.5.4"
+  },
+  "devDependencies": {
+    "@types/node": "22.20.1",
+    "@types/pg": "8.23.1",
+    "trigger.dev": "4.6.1",
+    "tsx": "4.23.13",
+    "typescript": "7.0.2"
+  }
+}

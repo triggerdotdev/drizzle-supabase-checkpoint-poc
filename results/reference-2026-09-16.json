@@ -1,0 +1,72 @@
+{
+  "recordedAt": "2026-09-16T14:25:52.294897+00:00",
+  "source": "Initial deployed checkpoint experiment, prior to standalone packaging",
+  "versions": {
+    "trigger": "4.6.1",
+    "drizzle": "0.45.2",
+    "pg": "8.23.0"
+  },
+  "results": [
+    {
+      "mode": "held-transaction",
+      "checkpointAt": "2026-09-16T14:10:06.172Z",
+      "remoteSocketClosedAt": "2026-09-16T14:10:08.170Z",
+      "remoteSocketCloseMessage": "ClientHandler: (ECLIENTSOCKETCLOSED) Client socket closed while state was busy (proxy)",
+      "secondsAfterCheckpoint": 1.998,
+      "resumeRequestedAt": "2026-09-16T14:12:24.022Z",
+      "querySucceeded": false,
+      "queryError": "Failed query: select pg_backend_pid() as pid, txid_current()::text as txid\nparams: ; cause: Client has encountered a connection error and is not queryable",
+      "sameModule": true,
+      "externalSamples": 270,
+      "terminalStatus": "COMPLETED",
+      "measured": true
+    },
+    {
+      "mode": "held-client",
+      "checkpointAt": "2026-09-16T14:13:25.464Z",
+      "remoteSocketClosedAt": "2026-09-16T14:13:27.498Z",
+      "remoteSocketCloseMessage": "ClientHandler: (ECLIENTSOCKETCLOSED) Client socket closed while state was idle (proxy)",
+      "secondsAfterCheckpoint": 2.034,
+      "resumeRequestedAt": "2026-09-16T14:15:42.652Z",
+      "querySucceeded": false,
+      "queryError": "Failed query: select pg_backend_pid() as pid\nparams: ; cause: Client has encountered a connection error and is not queryable",
+      "sameModule": true,
+      "externalSamples": 269,
+      "terminalStatus": "COMPLETED",
+      "measured": true
+    },
+    {
+      "mode": "idle-pool",
+      "checkpointAt": "2026-09-16T14:16:43.843Z",
+      "remoteSocketClosedAt": "2026-09-16T14:16:45.591Z",
+      "remoteSocketCloseMessage": "ClientHandler: (ECLIENTSOCKETCLOSED) Client socket closed while state was idle (proxy)",
+      "secondsAfterCheckpoint": 1.748,
+      "resumeRequestedAt": "2026-09-16T14:19:00.889Z",
+      "querySucceeded": true,
+      "queryError": null,
+      "sameModule": true,
+      "externalSamples": 269,
+      "terminalStatus": "COMPLETED",
+      "measured": true
+    },
+    {
+      "mode": "released",
+      "checkpointAt": "2026-09-16T14:20:03.590Z",
+      "remoteSocketClosedAt": "2026-09-16T14:19:48.741Z",
+      "remoteSocketCloseMessage": "ClientHandler: Terminate received from client",
+      "secondsAfterCheckpoint": -14.849,
+      "resumeRequestedAt": "2026-09-16T14:22:20.774Z",
+      "querySucceeded": true,
+      "queryError": null,
+      "sameModule": true,
+      "externalSamples": 269,
+      "terminalStatus": "COMPLETED",
+      "measured": true
+    }
+  ],
+  "notes": [
+    "Independent Supavisor logs establish remote closure; Node error timestamps after restore are not used for that.",
+    "Timing is observed on a test deployment, not a guaranteed teardown bound.",
+    "All project, run, module and backend identifiers are omitted."
+  ]
+}
