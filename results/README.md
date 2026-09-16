@@ -1,42 +1,33 @@
-# Measured checkpoint behavior
+# Deployed verification
 
-## Standalone example verification
+The focused E2E passed on 16 September 2026 using Trigger.dev test cloud, Supabase's
+transaction pooler on port 6543, Drizzle 0.45.2, `pg` 8.23.0, and Trigger.dev SDK 4.6.1.
+Both turns streamed real Anthropic responses, both database queries succeeded, and the
+run completed successfully. See the [sanitized measurement record](checkpoint-2026-09-16.json).
 
-The recommended example in this repository was deployed and verified on 16 September 2026.
-`pnpm run e2e:chat` confirmed two successful database queries, two real model responses, an
-engine checkpoint-creation event, continuation after that checkpoint, and the same module UUID
-on both turns. Both SQL operations returned their clients to the pool before model streaming.
+| Event | UTC |
+| --- | --- |
+| First query completed; one idle client in the pool | 15:22:05.329 |
+| Engine confirmed checkpoint | 15:22:31.143 |
+| Supavisor logged the client socket closing | 15:22:33.063 |
+| Harness sent the second message | 15:24:43.227 |
+| Engine confirmed continuation | 15:24:49.718 |
+| Second query completed through a fresh connection | 15:24:55.282 |
 
-## Reference experiment
+The pool object's identity survived. Its connection counter increased from **1 to 2**,
+and its background error counter increased from **0 to 1**. After each query, the pool
+had one client, returned and idle.
 
-The initial four-case experiment ran on 16 September 2026 using Trigger.dev SDK/CLI 4.6.1,
-Drizzle 0.45.2, node-postgres 8.23.0, and Supabase's shared transaction pooler. It used an actual
-deployed chat agent and real Anthropic responses. Each case remained suspended for more than
-two minutes after the engine recorded checkpoint creation.
+Only **169.953 seconds** elapsed between the queries, less than the deliberately configured
+300-second idle timeout. Ordinary idle expiry therefore cannot explain the fresh connection.
+Supavisor independently reported the old client socket closing **1.920 seconds after the
+checkpoint**, well before the second message. The pool object survived in memory; its old
+network connection did not stay open throughout suspension.
 
-| Case | Remote socket closure relative to checkpoint | SQL through retained state after resume |
-| --- | --- | --- |
-| Open transaction | 2.00 seconds after | Failed: retained client was no longer queryable |
-| Checked-out client | 2.03 seconds after | Failed: retained client was no longer queryable |
-| Returned client, 5-minute timeout | 1.75 seconds after | Succeeded: pool opened a new connection |
-| Returned client, 10-second timeout | 14.85 seconds before | Succeeded: pool opened a new connection |
+The error listener handles `pg`'s background error after restore; `pg` removes the broken idle
+client and opens another when queried. No explicit reconnect or SQL retry was needed here.
 
-[Sanitized timestamps and measurements](reference-2026-09-16.json) are included. This reference
-run preceded standalone packaging; the connection-lifecycle cases were extracted into this repo.
-
-Supavisor logs supplied the remote socket-closure timestamps. In the open-transaction case,
-external SQL sampling also observed the original backend disappear approximately two seconds
-after checkpoint creation. A later pooler log reported no subscribers to that transaction pool.
-
-The five-minute idle case is the useful illustration of `pool.on("error")`: the remote socket
-closed during suspension, the pool removed the dead idle client when the worker resumed, the
-error listener recorded it, and the subsequent query opened a new connection. The listener
-did not revive the original connection. Both cases retaining a checked-out client failed their
-resumed query; their test runs completed only because the experiment records that failure and
-then cleans up.
-
-The ten-second case expired before checkpoint creation. An idle chat can still hold a socket
-during the transition to a checkpoint; the measured two-second delay is not a guaranteed bound.
-
-These are lifecycle measurements from a test deployment, not production telemetry, saturation
-measurements, or estimated cost savings. Supavisor metrics lagged and were not used to time closure.
+These are observations from one isolated test, not a guaranteed teardown deadline. Pooler
+logs were correlated by time in a dedicated project. They describe the client socket to
+Supavisor, not the size of Supavisor's reusable backend pool. The example does not hold a
+client or transaction across the wait, and does not establish production capacity or billing.

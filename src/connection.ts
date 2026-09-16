@@ -1,4 +1,4 @@
-import type { Pool, PoolConfig } from "pg";
+import type { PoolConfig } from "pg";
 
 export function connectionConfig(
   connectionString: string,
@@ -28,16 +28,5 @@ export function connectionConfig(
     application_name: applicationName,
     connectionTimeoutMillis: 10_000,
     statement_timeout: 30_000,
-  };
-}
-
-export function samplePool(pool: Pool) {
-  return {
-    at: new Date().toISOString(),
-    total: pool.totalCount,
-    idle: pool.idleCount,
-    checkedOut: pool.totalCount - pool.idleCount,
-    waiting: pool.waitingCount,
-    ended: pool.ended || pool.ending,
   };
 }

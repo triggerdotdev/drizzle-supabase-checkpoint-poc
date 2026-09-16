@@ -1,20 +1,38 @@
+import { randomUUID } from "node:crypto";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 import { connectionConfig } from "./connection.js";
 
-// One reusable pool object. Construction does not open a connection.
-export const pool = new Pool({
+// Longer than the E2E wait so idle expiry cannot explain reconnection.
+// Use a short timeout such as 10_000 when adapting this for production.
+export const idleTimeoutMillis = 300_000;
+const pool = new Pool({
   ...connectionConfig(process.env.DATABASE_URL!, "checkpoint-poc:chat"),
-  max: 1, // This example queries sequentially.
-  idleTimeoutMillis: 10_000,
+  max: 1,
+  idleTimeoutMillis,
 });
 
-// A broken IDLE client can emit an error when no query is awaiting a result.
-// pg removes that client itself. This listener records the background error and
-// prevents an unhandled EventEmitter error from terminating the worker.
-// It does not retry a failed query or rescue an open transaction.
+// These counters make the checkpoint behavior visible in run metadata.
+const poolId = randomUUID();
+let connectionsOpened = 0;
+let idleErrors = 0;
+pool.on("connect", () => connectionsOpened++);
 pool.on("error", (error) => {
+  // pg already removes the broken idle client. This handles the background error;
+  // it does not retry a query or revive a transaction.
+  idleErrors++;
   console.error("Idle database connection closed", { message: error.message });
 });
 
 export const db = drizzle({ client: pool });
+export function getPoolState() {
+  return {
+    poolId,
+    connectionsOpened,
+    idleErrors,
+    total: pool.totalCount,
+    idle: pool.idleCount,
+    idleTimeoutMillis,
+  };
+}
+export type PoolState = ReturnType<typeof getPoolState>;
