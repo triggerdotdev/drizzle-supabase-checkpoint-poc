@@ -1,0 +1,47 @@
+{
+  "verifiedAt": "2026-09-16T15:25:03.592Z",
+  "environment": "Trigger.dev test cloud; Supabase transaction pooler (6543)",
+  "deploymentVersion": "20260916.6",
+  "task": "database-chat",
+  "passed": true,
+  "status": "COMPLETED",
+  "poolIdentityPreserved": true,
+  "first": {
+    "at": "2026-09-16T15:22:05.329Z",
+    "turn": 0,
+    "pool": {
+      "connectionsOpened": 1,
+      "idleErrors": 0,
+      "total": 1,
+      "idle": 1,
+      "idleTimeoutMillis": 300000
+    }
+  },
+  "checkpoint": {
+    "at": "2026-09-16T15:22:31.143Z",
+    "message": "[engine] SUSPENDED - Run was suspended after creating a checkpoint."
+  },
+  "remoteSocketClosed": {
+    "at": "2026-09-16T15:22:33.063Z",
+    "source": "Supabase Management API / supavisor_logs",
+    "message": "Client socket closed",
+    "secondsAfterCheckpoint": 1.92
+  },
+  "resumeRequestedAt": "2026-09-16T15:24:43.227Z",
+  "continuation": {
+    "at": "2026-09-16T15:24:49.718Z",
+    "message": "[engine] EXECUTING - Run was continued after being suspended"
+  },
+  "second": {
+    "at": "2026-09-16T15:24:55.282Z",
+    "turn": 1,
+    "pool": {
+      "connectionsOpened": 2,
+      "idleErrors": 1,
+      "total": 1,
+      "idle": 1,
+      "idleTimeoutMillis": 300000
+    }
+  },
+  "secondsBetweenQueries": 169.953
+}
